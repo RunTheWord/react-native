@@ -6,6 +6,7 @@ import {
   StyleSheet,
   FlatList,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 
 const TestingScreen = ({ route }) => {
@@ -118,7 +119,10 @@ const TestingScreen = ({ route }) => {
   }, [currentIndex, shuffledWords]);
 
   return (
-    <View style={styles.container}>
+    <LinearGradient 
+    colors={["#5A20BB", "#7F9DFF"]}
+    style={styles.container}
+    >
       {/* 진행 상황 표시 */}
       <Text style={styles.progress}>
         {Math.min(currentIndex + 1, shuffledWords.length || wordsData.length)}/
@@ -163,7 +167,7 @@ const TestingScreen = ({ route }) => {
           </TouchableOpacity>
         )}
       />
-    </View>
+    </LinearGradient>
   );
 };
 
@@ -174,7 +178,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#6A0DAD",
   },
   progress: {
-    fontSize: 20,
+    fontSize: 28,
     fontWeight: "bold",
     textAlign: "center",
     color: "#fff",
@@ -192,7 +196,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   word: {
-    fontSize: 30,
+    fontSize: 36,
     fontWeight: "bold",
     textAlign: "center",
     marginVertical: 10,
@@ -220,9 +224,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 1.41,
     elevation: 2,
+    borderWidth: 0,
   },
   optionText: {
-    fontSize: 18,
+    fontSize: 24,
     textAlign: "center",
     color: "#6A0DAD",
   },
@@ -230,11 +235,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#d4edda",
     borderColor: "#28a745",
     borderWidth: 2,
+    padding: 13,
   },
   wrongOption: {
     backgroundColor: "#f8d7da",
     borderColor: "#dc3545",
     borderWidth: 2,
+    padding: 13,
   },
 });
 

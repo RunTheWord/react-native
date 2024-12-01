@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   FlatList,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "../../../firebaseConfig"; // Firebase 설정 가져오기
@@ -35,10 +36,27 @@ const TestingResultScreen = ({ route }) => {
   const navigation = useNavigation();
   const { title, level, finalScore, total, incorrectWords } = route.params;
 
+  const getHeaderText = () => {
+    if (finalScore === 20) {
+      return "만점입니다! 최고에요😍😍";
+    } else if (finalScore > 15) {
+      return "매우 잘했어요! 😘😘";
+    } else if (finalScore > 10) {
+      return "잘했어요😊😊";
+    } else if (finalScore > 5) {
+      return "그래도 공부는 조금 하셨군요😓";
+    } else {
+      return "😱😱 분발하세요";
+    }
+  };
+
   return (
-    <View style={styles.container}>
+    <LinearGradient 
+    colors={["#5A20BB", "#7F9DFF"]} 
+    style={styles.container}
+    >
       {/* 헤더 영역 */}
-      <Text style={styles.headerText}>시험 결과</Text>
+      <Text style={styles.headerText}>{getHeaderText()}</Text>
       <Text style={styles.scoreText}>
         {finalScore}/{total}
       </Text>
@@ -86,7 +104,7 @@ const TestingResultScreen = ({ route }) => {
           <Text style={styles.buttonText}>메인으로 돌아가기</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </LinearGradient>
   );
 };
 
@@ -120,19 +138,23 @@ const styles = StyleSheet.create({
   },
   listItem: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    alignItems: "center", 
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: "#E0E0E0",
   },
   wordText: {
+    flex: 1, 
     fontSize: 18,
     fontWeight: "bold",
-    color: "#6A0DAD",
+    color: "#5A20BB",
+    textAlign: "center",
   },
   meaningText: {
+    flex: 1, 
     fontSize: 18,
-    color: "#333333",
+    color: "black",
+    textAlign: "center",
   },
   buttonContainer: {
     flexDirection: "row",
@@ -142,7 +164,7 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-    backgroundColor: "#5B00A1",
+    backgroundColor: "white",
     paddingVertical: 15,
     marginHorizontal: 10,
     borderRadius: 25,
@@ -150,7 +172,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 16,
-    color: "#FFFFFF",
+    color: "black",
     fontWeight: "bold",
   },
 });
