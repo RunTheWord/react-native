@@ -64,7 +64,7 @@ const TestingResultScreen = ({ route }) => {
       {/* 틀린 단어 리스트 */}
       <View style={styles.listContainer}>
         <FlatList
-          data={incorrectWords}
+          data={incorrectWords.slice(0,total-finalScore)}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
             <View style={styles.listItem}>
