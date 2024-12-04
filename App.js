@@ -41,7 +41,7 @@ const HomeStack = () => (
 
     <Stack.Screen name="TestLevelScreen" component={TestLevelScreen} />
     <Stack.Screen name="TestingScreen" component={TestingScreen} />
-    <Stack.Screen name="TestingResultScreen" component={TestingResultScreen} />
+    <Stack.Screen name="TestingResultScreen" component={TestingResultScreen} options={{ headerShown: false }} />
 
     <Stack.Screen name="WrongNoteScreen" component={WrongNoteScreen} />
     <Stack.Screen name="WrongTestingScreen" component={WrongTestingScreen} />
@@ -138,7 +138,7 @@ export default function App() {
             <Stack.Screen 
               name="Onboarding"
               component={OnboardingScreen}
-              options={{headerShown}}
+              options={{headerShown:false}}
             />
             <Stack.Screen
               name="Login"
