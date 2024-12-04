@@ -21,6 +21,7 @@ import WrongNoteLevelScreen from "./src/screens/wrongNote/WrongNoteLevelScreen";
 import WrongTestingScreen from "./src/screens/wrongNote/WrongTestingScreen";
 import WrongTestingResultScreen from "./src/screens/wrongNote/WrongTestingResultScreen";
 import "react-native-get-random-values";
+import OnboardingScreen from "./src/components/OnboardingScreen";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -134,6 +135,11 @@ export default function App() {
           </Tab.Navigator>
         ) : (
           <Stack.Navigator>
+            <Stack.Screen 
+              name="Onboarding"
+              component={OnboardingScreen}
+              options={{headerShown}}
+            />
             <Stack.Screen
               name="Login"
               component={LoginScreen}
