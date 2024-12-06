@@ -8,56 +8,72 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { collection, getDocs } from "firebase/firestore"; // Firestore 메서드 가져오기
-import { db } from "../../../firebaseConfig"; // Firestore 인스턴스 가져오기
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../../firebaseConfig";
 
 export default function RealStudyScreen({ route, navigation }) {
   const { title, collection: collectionName } = route.params;
 
-  const [data, setData] = useState([]); // Firestore에서 가져온 단어 데이터
-  const [loading, setLoading] = useState(true); // 로딩 상태
-  const [hiddenState, setHiddenState] = useState({}); // 단어 숨김 상태관리
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [hiddenState, setHiddenState] = useState({});
+  const [hideEnglish, setHideEnglish] = useState(false);
+  const [hideKorean, setHideKorean] = useState(true);
 
-  // Firestore에서 단어 데이터를 가져오는 함수
   const fetchWordsFromFirestore = async () => {
     try {
-      const querySnapshot = await getDocs(collection(db, collectionName)); // 전달받은 컬렉션에서 데이터 가져오기
+      const querySnapshot = await getDocs(collection(db, collectionName));
       const words = querySnapshot.docs.map((doc) => ({
-        id: doc.id, // Firestore 문서 ID
-        ...doc.data(), // Firestore 문서 데이터
+        id: doc.id,
+        ...doc.data(),
       }));
       setData(words);
 
-      // 초기 hiddenState 설정 (모든 단어가 보이는 상태)
       const initialHiddenState = words.reduce((acc, item) => {
-        acc[item.id] = { english: false, korean: false };
+        acc[item.id] = { english: false, korean: true };
         return acc;
       }, {});
       setHiddenState(initialHiddenState);
     } catch (error) {
       console.error("Firestore 데이터 가져오기 오류:", error);
     } finally {
-      setLoading(false); // 로딩 상태 종료
+      setLoading(false);
     }
   };
 
-  // 컴포넌트가 처음 렌더링될 때 Firestore에서 데이터 가져오기
   useEffect(() => {
     fetchWordsFromFirestore();
   }, []);
 
-  // 영어/한글 보이기 전환
   const toggleVisibility = (id, type) => {
     setHiddenState((prevState) => ({
       ...prevState,
       [id]: {
         ...prevState[id],
-        [type]: !prevState[id][type], // type은 'english' 또는 'korean'
+        [type]: !prevState[id][type],
       },
     }));
   };
 
-  // 단어 렌더링
+  const toggleAllVisibility = (type) => {
+    setHiddenState((prevState) =>
+      Object.keys(prevState).reduce((acc, id) => {
+        acc[id] = {
+          ...prevState[id],
+          [type]: !prevState[id][type],
+        };
+        return acc;
+      }, {})
+    );
+
+    // 버튼 상태 업데이트
+    if (type === "english") {
+      setHideEnglish((prev) => !prev);
+    } else if (type === "korean") {
+      setHideKorean((prev) => !prev);
+    }
+  };
+
   const renderItem = ({ item }) => (
     <View style={styles.wordRow}>
       {/* 영어 */}
@@ -86,7 +102,26 @@ export default function RealStudyScreen({ route, navigation }) {
     <LinearGradient colors={["#6A0DAD", "#C299F6"]} style={styles.container}>
       <Text style={styles.headerText}>{title}</Text>
 
-      {/* 로딩 상태 */}
+      {/* 전체 보이기/숨기기 버튼 */}
+      <View style={styles.toggleButtons}>
+        <TouchableOpacity
+          style={styles.toggleButton}
+          onPress={() => toggleAllVisibility("english")}
+        >
+          <Text style={styles.toggleButtonText}>
+            {hideEnglish ? "영어 보이기" : "영어 숨기기"}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.toggleButton}
+          onPress={() => toggleAllVisibility("korean")}
+        >
+          <Text style={styles.toggleButtonText}>
+            {hideKorean ? "뜻 보이기" : "뜻 숨기기"}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
       {loading ? (
         <ActivityIndicator size="large" color="#FFFFFF" />
       ) : (
@@ -120,6 +155,22 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 20,
     fontWeight: "bold",
+  },
+  toggleButtons: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    marginBottom: 20,
+  },
+  toggleButton: {
+    backgroundColor: "#fff",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+  },
+  toggleButtonText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#6A0DAD",
   },
   listContainer: {
     paddingBottom: 20,

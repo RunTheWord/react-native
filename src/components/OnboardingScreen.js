@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+} from "react-native";
 import Swiper from "react-native-swiper";
 
 const OnboardingScreen = ({ navigation }) => {
@@ -11,7 +18,8 @@ const OnboardingScreen = ({ navigation }) => {
     },
     {
       title: "단어 시험도 보고, 오답노트 관리도 하고",
-      description: "단어 시험에서 틀린 단어만 오답노트로 따로 모아 관리할 수 있어요",
+      description:
+        "단어 시험에서 틀린 단어만 \n오답노트로 따로 모아 관리할 수 있어요",
       image: require("../../assets/test.png"), // 이미지 경로를 수정하세요
     },
     {
@@ -83,7 +91,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#555",
     marginBottom: -150,
-  }, 
+  },
   buttonContainer: {
     flex: 0.25,
     justifyContent: "center",

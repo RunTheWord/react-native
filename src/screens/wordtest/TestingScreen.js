@@ -7,63 +7,59 @@ import {
   FlatList,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
 
 const TestingScreen = ({ route }) => {
   const navigation = useNavigation();
   const { title, level, words } = route.params;
 
-  // 상태 관리
-  const [currentIndex, setCurrentIndex] = useState(0); // 현재 문제의 인덱스
-  const [timeLeft, setTimeLeft] = useState(10); // 남은 시간 (초)
-  const [score, setScore] = useState(0); // 점수
-  const [incorrectWords, setIncorrectWords] = useState([]); // 오답 리스트
-  const [randomOptions, setRandomOptions] = useState([]); // 보기 목록
-  const [currentWord, setCurrentWord] = useState(null); // 현재 문제 단어
-  const [shuffledWords, setShuffledWords] = useState([]); // 섞인 단어 목록
-  const [selectedOption, setSelectedOption] = useState(null); // 선택한 보기
-  const [isCorrect, setIsCorrect] = useState(null); // 정답 여부
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(5);
+  const [score, setScore] = useState(0);
+  const [incorrectWords, setIncorrectWords] = useState([]);
+  const [randomOptions, setRandomOptions] = useState([]);
+  const [currentWord, setCurrentWord] = useState(null);
+  const [shuffledWords, setShuffledWords] = useState([]);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [isCorrect, setIsCorrect] = useState(null);
+  const [timeoutMessage, setTimeoutMessage] = useState(false);
 
   const wordsData = [...words];
 
-  // 첫 로드 시 단어를 섞고 첫 문제를 설정
   useEffect(() => {
-    const shuffled = [...wordsData].sort(() => Math.random() - 0.5); // 단어 섞기
-    setShuffledWords(shuffled); // 섞인 단어 저장
-    setCurrentWord(shuffled[0]); // 첫 번째 문제 설정
-    generateRandomOptions(shuffled[0]); // 첫 번째 문제 보기를 생성
+    const shuffled = [...wordsData].sort(() => Math.random() - 0.5);
+    setShuffledWords(shuffled);
+    setCurrentWord(shuffled[0]);
+    generateRandomOptions(shuffled[0]);
   }, []);
 
-  // 타이머 동작 (1초마다 감소)
   useEffect(() => {
     if (timeLeft === 0) {
-      handleTimeout(); // 시간이 다 되면 시간초과 처리
+      handleTimeout();
       return;
     }
     const timer = setInterval(() => {
       setTimeLeft((prev) => prev - 1);
-    }, 1000);
+    }, 300);
 
-    return () => clearInterval(timer); // 컴포넌트 언마운트 시 타이머 정리
+    return () => clearInterval(timer);
   }, [timeLeft]);
 
-  // 랜덤 보기 생성
   const generateRandomOptions = (word) => {
     const options = [word.korean];
     while (options.length < 4) {
       const randomMeaning =
         wordsData[Math.floor(Math.random() * wordsData.length)].korean;
       if (!options.includes(randomMeaning)) {
-        options.push(randomMeaning); // 중복 방지 후 추가
+        options.push(randomMeaning);
       }
     }
-    setRandomOptions(options.sort(() => Math.random() - 0.5)); // 보기 순서 섞기
+    setRandomOptions(options.sort(() => Math.random() - 0.5));
   };
 
-  // 정답 선택 처리
-
   const handleAnswer = (selectedMeaning) => {
-    setSelectedOption(selectedMeaning); // 선택한 보기 저장
-    const correct = selectedMeaning === currentWord.korean; // 정답 여부 확인
+    setSelectedOption(selectedMeaning);
+    const correct = selectedMeaning === currentWord.korean;
     setIsCorrect(correct);
 
     if (correct) {
@@ -75,33 +71,32 @@ const TestingScreen = ({ route }) => {
       ]);
     }
 
-    // 1초 후 다음 문제로 이동
     setTimeout(() => {
       setSelectedOption(null);
       setIsCorrect(null);
-      setCurrentIndex((prevIndex) => prevIndex + 1); // 인덱스 업데이트
+      setTimeoutMessage(false);
+      setCurrentIndex((prevIndex) => prevIndex + 1);
     }, 1000);
   };
 
-  // 시간초과 처리
   const handleTimeout = () => {
     setIncorrectWords((prev) => [
       ...prev,
       { english: currentWord.english, korean: currentWord.korean },
     ]);
+    setTimeoutMessage(true);
     setTimeout(() => {
-      setCurrentIndex((prevIndex) => prevIndex + 1); // 시간 초과 시 다음 문제로 이동
+      setTimeoutMessage(false);
+      setCurrentIndex((prevIndex) => prevIndex + 1);
     }, 1000);
   };
 
-  // 다음 문제로 이동
   useEffect(() => {
     if (shuffledWords.length === 0) {
-      return; // 단어 배열이 준비되지 않으면 아무 작업도 하지 않음
+      return;
     }
 
     if (currentIndex >= shuffledWords.length) {
-      // 모든 문제를 다 풀었을 경우 결과 화면으로 이동
       navigation.navigate("TestingResultScreen", {
         finalScore: score,
         total: shuffledWords.length,
@@ -110,37 +105,41 @@ const TestingScreen = ({ route }) => {
         level: level,
       });
     } else if (currentIndex < shuffledWords.length) {
-      // 다음 문제 설정
       setCurrentWord(shuffledWords[currentIndex]);
       generateRandomOptions(shuffledWords[currentIndex]);
-      setTimeLeft(10); // 타이머 리셋
+      setTimeLeft(10);
     }
   }, [currentIndex, shuffledWords]);
 
   return (
-    <View style={styles.container}>
-      {/* 진행 상황 표시 */}
+    <LinearGradient
+      colors={["#5A20BB", "#7F9DFF"]} // 그라데이션 색상
+      style={styles.container}
+    >
       <Text style={styles.progress}>
         {Math.min(currentIndex + 1, shuffledWords.length || wordsData.length)}/
         {shuffledWords.length || wordsData.length}
       </Text>
 
-      {/* 문제 표시 */}
       <View style={styles.quizBox}>
         {currentWord && <Text style={styles.word}>{currentWord.english}</Text>}
       </View>
 
-      {/* 타이머 표시 */}
       <View style={styles.timerBar}>
         <View
           style={{
             ...styles.timerFill,
-            width: `${(timeLeft / 10) * 100}%`, // 남은 시간에 따른 너비
+            width: `${(timeLeft / 10) * 100}%`,
           }}
         />
       </View>
 
-      {/* 보기 표시 */}
+      {timeoutMessage && (
+        <Text style={styles.timeoutMessage}>
+          시간 초과! 오답 처리되었습니다.
+        </Text>
+      )}
+
       <FlatList
         data={randomOptions}
         keyExtractor={(item, index) => index.toString()}
@@ -148,30 +147,30 @@ const TestingScreen = ({ route }) => {
           <TouchableOpacity
             style={[
               styles.optionButton,
-              selectedOption === item
+              timeoutMessage && item === currentWord.korean
+                ? styles.correctOption
+                : timeoutMessage
+                ? styles.wrongOption
+                : selectedOption === item
                 ? isCorrect
                   ? styles.correctOption
                   : styles.wrongOption
-                : item === currentWord.korean && selectedOption !== null
-                ? styles.correctOption // 시간초과 시 정답 표시
                 : null,
             ]}
             onPress={() => handleAnswer(item)}
-            disabled={selectedOption !== null} // 선택 비활성화
+            disabled={selectedOption !== null || timeoutMessage}
           >
             <Text style={styles.optionText}>{item}</Text>
           </TouchableOpacity>
         )}
       />
-    </View>
+    </LinearGradient>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: "#6A0DAD",
+    padding: 25,
   },
   progress: {
     fontSize: 20,
@@ -185,6 +184,8 @@ const styles = StyleSheet.create({
     padding: 20,
     marginVertical: 20,
     alignItems: "center",
+    alignSelf: "center", // 가운데 정렬
+    width: "90%", // 너비를 화면의 90%로 설정
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
@@ -200,14 +201,15 @@ const styles = StyleSheet.create({
   },
   timerBar: {
     height: 15,
-    width: "100%",
-    backgroundColor: "lightyellow", // 밝은 노란색
+    width: "90%", // 너비를 화면의 90%로 설정
+    alignSelf: "center", // 가운데 정렬
+    backgroundColor: "lightyellow",
     borderRadius: 10,
     marginBottom: 20,
   },
   timerFill: {
     height: "100%",
-    backgroundColor: "#FFD700", // 진한 노란색
+    backgroundColor: "#FFD700",
     borderRadius: 10,
   },
   optionButton: {
@@ -215,6 +217,8 @@ const styles = StyleSheet.create({
     padding: 15,
     marginVertical: 10,
     borderRadius: 10,
+    alignSelf: "center", // 가운데 정렬
+    width: "90%", // 너비를 화면의 90%로 설정
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
@@ -235,6 +239,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8d7da",
     borderColor: "#dc3545",
     borderWidth: 2,
+  },
+  timeoutMessage: {
+    textAlign: "center",
+    fontSize: 18,
+    color: "#FFD700",
+    marginBottom: 20,
+    fontWeight: "bold",
   },
 });
 

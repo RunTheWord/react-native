@@ -10,7 +10,7 @@ import SignUpScreen from "./src/components/SignUpScreen";
 import MyPageScreen from "./src/components/MyPageScreen";
 import SettingsScreen from "./src/components/SettingsScreen";
 import { AuthProvider } from "./src/context/AuthProvider";
-import Home from"./src/screens/Home";
+import Home from "./src/screens/Home";
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 import Study from "./src/screens/wordstudy/Study";
@@ -42,25 +42,24 @@ const HomeStack = () => (
       component={Home}
       options={{ headerShown: false }}
     />
-      <Stack.Screen name="WordTestScreen" component={WordTestScreen} />
-      <Stack.Screen name="WordStudyScreen" component={Study} />
-      <Stack.Screen name="RealStudyScreen" component={RealStudyScreen} />
+    <Stack.Screen name="WordTestScreen" component={WordTestScreen} />
+    <Stack.Screen name="WordStudyScreen" component={Study} />
+    <Stack.Screen name="RealStudyScreen" component={RealStudyScreen} />
 
-      <Stack.Screen name="TestLevelScreen" component={TestLevelScreen} />
-      <Stack.Screen name="TestingScreen" component={TestingScreen} />
-      <Stack.Screen name="TestingResultScreen" component={TestingResultScreen} />
+    <Stack.Screen name="TestLevelScreen" component={TestLevelScreen} />
+    <Stack.Screen name="TestingScreen" component={TestingScreen} />
+    <Stack.Screen name="TestingResultScreen" component={TestingResultScreen} />
 
-      <Stack.Screen name="WrongNoteScreen" component={WrongNoteScreen} />
-      <Stack.Screen name="WrongTestingScreen" component={WrongTestingScreen} />
-      <Stack.Screen
-        name="WrongTestingResultScreen"
-        component={WrongTestingResultScreen}
-      />
-      <Stack.Screen
-        name="WrongNoteLevelScreen"
-        component={WrongNoteLevelScreen}
-      />
-
+    <Stack.Screen name="WrongNoteScreen" component={WrongNoteScreen} />
+    <Stack.Screen name="WrongTestingScreen" component={WrongTestingScreen} />
+    <Stack.Screen
+      name="WrongTestingResultScreen"
+      component={WrongTestingResultScreen}
+    />
+    <Stack.Screen
+      name="WrongNoteLevelScreen"
+      component={WrongNoteLevelScreen}
+    />
   </Stack.Navigator>
 );
 
@@ -103,72 +102,73 @@ export default function App() {
   return (
     <AuthProvider>
       <ThemeProvider>
-    <NavigationContainer>
-      {isLoggedIn ? (
-        // 로그인 상태일 때 Tab Navigator 렌더링
-        <Tab.Navigator
-          screenOptions={({ route }) => ({
-            tabBarIcon: ({ color, size }) => {
-              let iconName;
-              if (route.name === "Home") iconName = "home-outline";
-              else if (route.name === "MyPage") iconName = "person-outline";
-              else if (route.name === "Settings") iconName = "settings-outline";
+        <NavigationContainer>
+          {isLoggedIn ? (
+            // 로그인 상태일 때 Tab Navigator 렌더링
+            <Tab.Navigator
+              screenOptions={({ route }) => ({
+                tabBarIcon: ({ color, size }) => {
+                  let iconName;
+                  if (route.name === "Home") iconName = "home-outline";
+                  else if (route.name === "MyPage") iconName = "person-outline";
+                  else if (route.name === "Settings")
+                    iconName = "settings-outline";
 
-              return <Icon name={iconName} size={size} color={color} />;
-            },
-            tabBarActiveTintColor: "#6A0DAD",
-            tabBarInactiveTintColor: "gray",
-            tabBarStyle: {
-              backgroundColor: "#FFF",
-              borderTopWidth: 0,
-              elevation: 5,
-            },
-            headerShown: false,
-          })}
-        >
-          <Tab.Screen
-            name="Home"
-            component={HomeStack}
-            options={{ tabBarLabel: "홈" }}
-          />
-          <Tab.Screen
-            name="MyPage"
-            component={MyPageStack}
-            options={{ tabBarLabel: "마이페이지" }}
-          />
-          <Tab.Screen
-            name="Settings"
-            component={SettingsStack}
-            options={{ tabBarLabel: "설정" }}
-          />
-        </Tab.Navigator>
-      ) : (
-        // 로그인되지 않았을 때 로그인/회원가입 스택 렌더링
-        <Stack.Navigator>
-            <Stack.Screen 
-              name="Onboarding"
-              component={OnboardingScreen}
-              options={{headerShown: false}}
-            />
-          <Stack.Screen
-            name="Login"
-            component={LoginScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="SignUp"
-            component={SignUpScreen}
-            options={{
-              headerTitle: "회원가입",
-              headerStyle: { backgroundColor: "#6A0DAD" },
-              headerTintColor: "#FFF",
-              headerTitleStyle: { fontWeight: "bold" },
-            }}
-          />
-        </Stack.Navigator>
-      )}
-    </NavigationContainer>
-    </ThemeProvider>
+                  return <Icon name={iconName} size={size} color={color} />;
+                },
+                tabBarActiveTintColor: "#6A0DAD",
+                tabBarInactiveTintColor: "gray",
+                tabBarStyle: {
+                  backgroundColor: "#FFF",
+                  borderTopWidth: 0,
+                  elevation: 5,
+                },
+                headerShown: false,
+              })}
+            >
+              <Tab.Screen
+                name="Home"
+                component={HomeStack}
+                options={{ tabBarLabel: "홈" }}
+              />
+              <Tab.Screen
+                name="MyPage"
+                component={MyPageStack}
+                options={{ tabBarLabel: "마이페이지" }}
+              />
+              <Tab.Screen
+                name="Settings"
+                component={SettingsStack}
+                options={{ tabBarLabel: "설정" }}
+              />
+            </Tab.Navigator>
+          ) : (
+            // 로그인되지 않았을 때 로그인/회원가입 스택 렌더링
+            <Stack.Navigator>
+              <Stack.Screen
+                name="Onboarding"
+                component={OnboardingScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Login"
+                component={LoginScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="SignUp"
+                component={SignUpScreen}
+                options={{
+                  headerTitle: "회원가입",
+                  headerStyle: { backgroundColor: "#6A0DAD" },
+                  headerTintColor: "#FFF",
+                  headerTitleStyle: { fontWeight: "bold" },
+                }}
+              />
+            </Stack.Navigator>
+          )}
+        </NavigationContainer>
+      </ThemeProvider>
     </AuthProvider>
   );
 }

@@ -9,8 +9,8 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
-import { collection, getDocs } from "firebase/firestore"; // Firestore 메서드
-import { db } from "../../../firebaseConfig"; // Firebase 설정 가져오기
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../../firebaseConfig";
 
 const TestLevelScreen = ({ route }) => {
   const { title, collection: collectionName } = route.params;
@@ -35,13 +35,18 @@ const TestLevelScreen = ({ route }) => {
       return;
     }
     try {
-      console.log("Fetching collection:", collectionName);
       const querySnapshot = await getDocs(collection(db, collectionName));
       const words = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
-      setWordChunks(chunkArray(words, 20));
+      const actualChunks = chunkArray(words, 20);
+
+      // 더미 챕터 데이터 생성
+      const dummyChunks = Array.from({ length: 20 - actualChunks.length }, () =>
+        Array(20).fill({ id: "dummy", word: "N/A" })
+      );
+      setWordChunks([...actualChunks, ...dummyChunks]);
     } catch (error) {
       console.error("단어 가져오기 오류:", error);
     } finally {
@@ -68,20 +73,27 @@ const TestLevelScreen = ({ route }) => {
         renderItem={({ item, index }) => (
           <TouchableOpacity
             style={styles.card}
-            onPress={() =>
-              navigation.navigate("TestingScreen", {
-                title: title,
-                level: `챕터 ${index + 1}`,
-                words: item,
-              })
-            }
+            onPress={() => {
+              if (index < 4) {
+                navigation.navigate("TestingScreen", {
+                  title: title,
+                  level: `챕터 ${index + 1}`,
+                  words: item,
+                });
+              } else {
+                // 챕터 5~20 클릭 시 아무 동작하지 않음
+                console.log(`챕터 ${index + 1}은 실제로 사용 불가`);
+              }
+            }}
           >
             <LinearGradient
               colors={["#FFFEE3", "#FFFD9E"]}
               style={styles.cardGradientBackground}
             >
               <Text style={styles.cardTitle}>{`챕터 ${index + 1}`}</Text>
-              <Text style={styles.progress}>{`단어 개수: ${item.length}`}</Text>
+              <Text style={styles.progress}>
+                단어 개수: {item.length || "0"}
+              </Text>
             </LinearGradient>
           </TouchableOpacity>
         )}

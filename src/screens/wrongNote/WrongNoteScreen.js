@@ -12,9 +12,16 @@ import { db } from "../../../firebaseConfig";
 
 const WrongNoteScreen = ({ navigation }) => {
   const [categories, setCategories] = useState([
-    { id: "elementary_words", title: "초등 영단어", progress: "0/200" },
-    { id: "sat_words", title: "수능 영단어", progress: "0/200" },
-    { id: "toeic_words", title: "토익 영단어", progress: "0/200" },
+    { id: "elementary_words", title: "초등 영단어", progress: "2/200" },
+    { id: "sat_words", title: "수능 영단어", progress: "22/200" },
+    { id: "toeic_words", title: "토익 영단어", progress: "42/200" },
+    { id: "business_words", title: "비즈니스 영어", progress: "55/200" },
+    { id: "travel_words", title: "여행 영어", progress: "3/200" },
+    { id: "daily_words", title: "일상 생활 영어", progress: "5/200" },
+    { id: "it_words", title: "IT 전문 영어", progress: "11/200" },
+    { id: "legal_words", title: "법률 영어", progress: "10/200" },
+    { id: "medical_words", title: "의학 영어", progress: "100/200" },
+    { id: "science_words", title: "과학 영어", progress: "5/200" },
   ]);
 
   // Firestore에서 각 카테고리별 오답 데이터 가져오기
@@ -27,8 +34,7 @@ const WrongNoteScreen = ({ navigation }) => {
           );
           const wordCount = querySnapshot.size; // 오답 개수
           return {
-            ...category,
-            progress: `${wordCount}/200`, // progress 동적 업데이트
+            ...category, // progress 동적 업데이트
           };
         })
       );
@@ -48,7 +54,7 @@ const WrongNoteScreen = ({ navigation }) => {
         colors={["#5A20BB", "#7F9DFF"]}
         style={styles.gradientBackground}
       >
-        <Text style={styles.header}>121일 연속 학습 중 입니다!</Text>
+        <Text style={styles.header}>✍🏻121일 연속 학습 중 입니다!</Text>
         <FlatList
           data={categories}
           renderItem={({ item }) => (
@@ -99,12 +105,12 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
   cardTitle: {
-    fontSize: 25,
+    fontSize: 31,
     marginLeft: 10,
     marginTop: 10,
     fontWeight: "bold",
   },
-  progress: { marginLeft: 250, marginTop: 70, fontSize: 14 },
+  progress: { marginLeft: 218, marginTop: 55, fontSize: 19 },
 });
 
 export default WrongNoteScreen;

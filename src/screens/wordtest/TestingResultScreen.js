@@ -10,6 +10,7 @@ import { useNavigation } from "@react-navigation/native";
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "../../../firebaseConfig"; // Firebase 설정 가져오기
 import { v4 as uuidv4 } from "uuid"; // 고유 ID 생성 라이브러리 (uuid)
+import { LinearGradient } from "expo-linear-gradient";
 
 const saveWrongAnswersToDB = async (category, level, incorrectWords) => {
   try {
@@ -36,7 +37,10 @@ const TestingResultScreen = ({ route }) => {
   const { title, level, finalScore, total, incorrectWords } = route.params;
 
   return (
-    <View style={styles.container}>
+    <LinearGradient
+      colors={["#5A20BB", "#7F9DFF"]} // 배경색 그라데이션
+      style={styles.container}
+    >
       {/* 헤더 영역 */}
       <Text style={styles.headerText}>시험 결과</Text>
       <Text style={styles.scoreText}>
@@ -68,7 +72,7 @@ const TestingResultScreen = ({ route }) => {
             // 생성된 객체를 출력하거나 사용할 수 있음
             navigation.reset({
               index: 1,
-              routes: [{ name: "Home" }, { name: "WordTestScreen" }],
+              routes: [{ name: "Home" }, { name: "Home" }],
             });
           }}
         >
@@ -86,15 +90,13 @@ const TestingResultScreen = ({ route }) => {
           <Text style={styles.buttonText}>메인으로 돌아가기</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#6A0DAD", // 배경 보라색
-    alignItems: "center",
     padding: 20,
   },
   headerText: {
@@ -103,12 +105,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginTop: 20,
     marginBottom: 10,
+    textAlign: "center",
   },
   scoreText: {
     fontSize: 48,
     color: "#FFFFFF",
     fontWeight: "bold",
     marginBottom: 20,
+    textAlign: "center",
   },
   listContainer: {
     flex: 1,
@@ -117,6 +121,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     marginVertical: 20,
+    alignSelf: "center",
   },
   listItem: {
     flexDirection: "row",

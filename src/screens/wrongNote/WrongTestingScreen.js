@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { doc, getDoc, updateDoc, arrayRemove } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
+import { LinearGradient } from "expo-linear-gradient";
 
 const WrongTestingScreen = ({ route, navigation }) => {
   const { title, words, level, docId, pid } = route.params;
@@ -19,6 +20,7 @@ const WrongTestingScreen = ({ route, navigation }) => {
   const [shuffledWords, setShuffledWords] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
   const [isCorrect, setIsCorrect] = useState(null);
+  const [incorrectWords, setIncorrectWords] = useState([]); // 틀린 단어 저장
 
   useEffect(() => {
     if (Array.isArray(words) && words.length > 1) {
@@ -42,6 +44,7 @@ const WrongTestingScreen = ({ route, navigation }) => {
         level,
         finalScore: score,
         total: shuffledWords.length,
+        incorrectWords, // 틀린 단어 전달
       });
     }
   }, [currentIndex, shuffledWords]);
@@ -58,12 +61,27 @@ const WrongTestingScreen = ({ route, navigation }) => {
     }
     setRandomOptions(options.sort(() => Math.random() - 0.5));
   };
+
   const handleAnswer = async (selectedMeaning) => {
     setSelectedOption(selectedMeaning);
     const correct = selectedMeaning === currentWord.korean;
     setIsCorrect(correct);
 
-    if (correct) {
+    if (!correct) {
+      // 틀린 단어 저장
+      setIncorrectWords((prev) => [
+        ...prev,
+        {
+          english: currentWord.english,
+          korean: currentWord.korean,
+        },
+      ]);
+      setTimeout(() => {
+        setSelectedOption(null);
+        setIsCorrect(null);
+        setCurrentIndex((prev) => prev + 1);
+      }, 1000); // 오답일 경우 1초 대기
+    } else {
       setScore((prev) => prev + 1);
 
       try {
@@ -73,22 +91,18 @@ const WrongTestingScreen = ({ route, navigation }) => {
           );
         }
 
-        // Firestore 문서 참조 생성
         const docRef = doc(db, `wrong_notes_${title}`, docId);
-        // Firestore 문서가 존재하는지 확인
         const docSnap = await getDoc(docRef);
         if (!docSnap.exists()) {
           throw new Error(`Document with ID ${pid} does not exist.`);
         }
-        // 삭제할 단어 데이터 준비
+
         const wordToRemove = {
           id: currentWord.id || null,
-          //pid: currentWord.pid || null,
           english: currentWord.english || "",
           korean: currentWord.korean || "",
         };
 
-        // Firestore 문서 업데이트
         await updateDoc(docRef, {
           incorrectWords: arrayRemove(wordToRemove),
         });
@@ -96,33 +110,33 @@ const WrongTestingScreen = ({ route, navigation }) => {
       } catch (error) {
         console.error("Error removing correct word from DB:", error);
       }
-    }
 
-    setTimeout(() => {
-      setSelectedOption(null);
-      setIsCorrect(null);
-      setCurrentIndex((prev) => prev + 1);
-    }, 500);
+      setTimeout(() => {
+        setSelectedOption(null);
+        setIsCorrect(null);
+        setCurrentIndex((prev) => prev + 1);
+      }, 0); // 정답일 경우 0.5초 대기
+    }
   };
 
   if (!Array.isArray(words) || words.length === 0) {
     return (
-      <View style={styles.container}>
+      <LinearGradient colors={["#5A20BB", "#7F9DFF"]} style={styles.container}>
         <Text style={styles.loadingText}>오답 노트가 비어 있습니다.</Text>
-      </View>
+      </LinearGradient>
     );
   }
 
   if (!currentWord) {
     return (
-      <View style={styles.container}>
+      <LinearGradient colors={["#5A20BB", "#7F9DFF"]} style={styles.container}>
         <Text style={styles.loadingText}>단어를 불러오는 중입니다...</Text>
-      </View>
+      </LinearGradient>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <LinearGradient colors={["#5A20BB", "#7F9DFF"]} style={styles.container}>
       <Text style={styles.progress}>
         {currentIndex + 1}/{shuffledWords.length}
       </Text>
@@ -149,21 +163,20 @@ const WrongTestingScreen = ({ route, navigation }) => {
           </TouchableOpacity>
         )}
       />
-    </View>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: "#6A0DAD",
+    padding: 25,
   },
   progress: {
     fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",
-    color: "#FFF",
+    color: "#fff",
   },
   quizBox: {
     backgroundColor: "#fff",

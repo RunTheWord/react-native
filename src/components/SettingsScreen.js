@@ -49,7 +49,7 @@ export default function SettingsScreen() {
   };
 
   return (
-    <LinearGradient colors={["#6A0DAD", "#C299F6"]} style={styles.container}>
+    <LinearGradient colors={["#5A20BB", "#000000"]} style={styles.container}>
       <Text style={styles.headerText}>설정</Text>
 
       {/* 다크모드 */}
@@ -194,13 +194,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   deleteAccount: {
-    backgroundColor: "#FF6B6B",
+    backgroundColor: "#FFFD9E",
   },
   logoutButton: {
-    backgroundColor: "#FFB74D",
+    backgroundColor: "#91FFFC",
   },
   resetButton: {
-    backgroundColor: "#4A90E2", // 파란 계열로 변경
+    backgroundColor: "#FAA2FF", // 파란 계열로 변경
   },
   modalBackground: {
     flex: 1,
